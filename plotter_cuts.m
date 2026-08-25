@@ -7,7 +7,7 @@ folder_0 = "Phase_space_Bunch6d";
 folder_SC = "Phase_space_Bunch6d_SC";
 folder_SC_IBS = "Phase_space_Bunch6d_SC_IBS";
 
-cut = 3;
+cut = 2.5;
 
 % ----------------------------
 % Preallocate
@@ -237,8 +237,9 @@ xlim([0 17.4])
 ylabel("4D normalized emittance", 'FontSize', 20);
 legend("No SC, No IBS", "SC", "SC + IBS", 'FontSize', 20);
 grid on;
-title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
+%title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
 set(gca, 'FontSize', 20);
+saveas(gcf, "~/Documents/IPAC_IMAGES/emitt4d.png")
 
 figure(2); clf;
 plot(length_arr, N_arr / N_arr_ini * 100, 'k', "linewidth", 1.5); hold on;
@@ -249,7 +250,7 @@ ylabel("Transmission (%)", 'FontSize', 20);
 xlim([0 17.4])
 legend("No SC, No IBS", "SC", "SC + IBS", 'FontSize', 20);
 grid on;
-title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
+%title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
 set(gca, 'FontSize', 20);
 
 figure(3); clf;
@@ -261,7 +262,7 @@ xlim([0 17.4])
 ylabel("Normalized longitudinal emittance [eV * ms]", 'FontSize', 20);
 legend("No SC, No IBS", "SC", "SC + IBS", 'FontSize', 20, 'Location', 'northwest');
 grid on;
-title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
+%title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
 set(gca, 'FontSize', 20);
 
 figure(4); clf;
@@ -273,10 +274,11 @@ xlim([0 17.4])
 ylabel("Kinetic energy [MeV]", 'FontSize', 20);
 legend("No SC, No IBS", "SC", "SC + IBS", 'FontSize', 20, 'Location', 'northwest');
 grid on;
-title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
+%title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
 set(gca, 'FontSize', 20);
 
 figure(5); clf;
+subplot(2,1,1)
 plot(length_arr, sigma_t_arr, 'k', "linewidth", 1.5); hold on;
 plot(length_SC_arr, sigma_t_SC_arr, 'b', "linewidth", 1.5);
 plot(length_SC_IBS_arr, sigma_t_SC_IBS_arr, 'r', "linewidth", 1.5);
@@ -285,8 +287,21 @@ xlim([0 17.4])
 ylabel("Bunch length [mm/c]", 'FontSize', 20);
 legend("No SC, No IBS", "SC", "SC + IBS", 'FontSize', 20, 'Location', 'northwest');
 grid on;
-title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
+%title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
 set(gca, 'FontSize', 20);
+
+subplot(2,1,2)
+plot(length_arr, ES_arr / 1e6, 'k', "linewidth", 1.5); hold on;
+plot(length_SC_arr, ES_SC_arr / 1e6, 'b', "linewidth", 1.5);
+plot(length_SC_IBS_arr, ES_SC_IBS_arr / 1e6, 'r', "linewidth", 1.5);
+xlabel("z [m]", 'FontSize', 20);
+ylabel("Energy spread (MeV)", 'FontSize', 20);
+xlim([0 17.4])
+legend("No SC, No IBS", "SC", "SC + IBS", 'FontSize', 20);
+grid on;
+%title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
+set(gca, 'FontSize', 20);
+
 
 %{
 %%%%%%%%%%%%%%%%%%%% PHASE SPACE %%%%%%%%%%%%%%%%%%%%%%%
@@ -370,19 +385,6 @@ legend("SC + IBS", "SC", "No SC, No IBS", 'FontSize', 20);
 grid on;
 title("Final longitudinal phase space", 'FontSize', 22);
 set(gca, 'FontSize', 20);
-%}
-
-figure(8); clf;
-plot(length_arr, ES_arr / 1e6, 'k', "linewidth", 1.5); hold on;
-plot(length_SC_arr, ES_SC_arr / 1e6, 'b', "linewidth", 1.5);
-plot(length_SC_IBS_arr, ES_SC_IBS_arr / 1e6, 'r', "linewidth", 1.5);
-xlabel("z [m]", 'FontSize', 20);
-ylabel("Energy spread (MeV)", 'FontSize', 20);
-xlim([0 17.4])
-legend("No SC, No IBS", "SC", "SC + IBS", 'FontSize', 20);
-grid on;
-title("Three first cells of the Muon Final Cooling", 'FontSize', 22);
-set(gca, 'FontSize', 20);
 
 figure(9);
 for i = 1:249
@@ -404,4 +406,4 @@ for i = 1:249
     drawnow;
     pause(0.1);
 end
-
+%}

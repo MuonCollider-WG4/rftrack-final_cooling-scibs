@@ -9,7 +9,7 @@ folder_0 = "Phase_space_Bunch6d"
 folder_SC = "Phase_space_Bunch6d_SC"
 folder_SC_IBS = "Phase_space_Bunch6d_SC_IBS"
 
-cut = 3
+cut = 2.5
 n_steps = 249
 
 # ==========================
@@ -122,14 +122,14 @@ for i in range(n_steps):
 
     x_IBS, xp_IBS = M_IBS[:,0], M_IBS[:,1]
     y_IBS, yp_IBS = M_IBS[:,2], M_IBS[:,3]
-    t_IBS = M_IBS[:,4] * 3.335641e-9
-    P_IBS = M_IBS[:,5]
+    t_IBS = M_IBS[:,4] * 3.335641e-9 # ms (from mm/c to ms)
+    P_IBS = M_IBS[:,5] # MeV
 
     E = np.sqrt(P**2 + mass**2)
     E_SC = np.sqrt(P_SC**2 + mass**2)
     E_IBS = np.sqrt(P_IBS**2 + mass**2)
 
-    ES_arr[i] = np.std(E)
+    ES_arr[i] = np.std(E) # MeV
     ES_SC_arr[i] = np.std(E_SC)
     ES_SC_IBS_arr[i] = np.std(E_IBS)
 
@@ -173,41 +173,98 @@ for i in range(n_steps):
 # PLOTTING (no Octave needed)
 # ==========================
 
-plt.figure()
+plt.figure(figsize=(9,6))
 plt.plot(length_arr, emitt4d, 'k')
 plt.plot(length_SC_arr, emitt4d_SC, 'b')
 plt.plot(length_SC_IBS_arr, emitt4d_SC_IBS, 'r')
-plt.xlabel("z [m]")
-plt.ylabel("4D emittance")
-plt.legend(["No SC", "SC", "SC+IBS"])
+plt.xlabel("z [m]", fontsize=18)
+plt.ylabel("4D emittance [mm * mrad]", fontsize=18)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.legend(["No SC", "SC", "SC + IBS"], fontsize=18)
 plt.grid()
 plt.savefig("emitt4d.png", dpi=200)
+plt.savefig("emitt4d.svg")
 
-plt.figure()
+plt.figure(figsize=(9,6))
 plt.plot(length_arr, N_arr/N0*100, 'k')
 plt.plot(length_SC_arr, N_SC_arr/N0*100, 'b')
 plt.plot(length_SC_IBS_arr, N_SC_IBS_arr/N0*100, 'r')
-plt.xlabel("z [m]")
-plt.ylabel("Transmission [%]")
+plt.xlabel("z [m]", fontsize=18)
+plt.ylabel("Transmission [%]", fontsize=18)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.legend(["No SC", "SC", "SC + IBS"], fontsize=18)
 plt.grid()
 plt.savefig("transmission.png", dpi=200)
+plt.savefig("transmission.svg")
 
-plt.figure()
-plt.plot(length_arr, emittz, 'k')
-plt.plot(length_SC_arr, emittz_SC, 'b')
-plt.plot(length_SC_IBS_arr, emittz_SC_IBS, 'r')
-plt.xlabel("z [m]")
-plt.ylabel("Longitudinal emittance")
+plt.figure(figsize=(9,6))
+plt.plot(length_arr, emittz * 1e6, 'k')
+plt.plot(length_SC_arr, emittz_SC * 1e6, 'b')
+plt.plot(length_SC_IBS_arr, emittz_SC_IBS * 1e6, 'r')
+plt.xlabel("z [m]", fontsize=18)
+plt.ylabel("Longitudinal emittance [eV * ms]", fontsize=18)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.legend(["No SC", "SC", "SC + IBS"], fontsize=18)
 plt.grid()
 plt.savefig("emittz.png", dpi=200)
+plt.savefig("emittz.svg")
 
-plt.figure()
-plt.plot(length_arr, ES_arr/1e6, 'k')
-plt.plot(length_SC_arr, ES_SC_arr/1e6, 'b')
-plt.plot(length_SC_IBS_arr, ES_SC_IBS_arr/1e6, 'r')
-plt.xlabel("z [m]")
-plt.ylabel("Energy spread [MeV]")
+plt.figure(figsize=(9,6))
+plt.plot(length_arr, mean_K_arr, 'k')
+plt.plot(length_SC_arr, mean_K_SC_arr, 'b')
+plt.plot(length_SC_IBS_arr, mean_K_SC_IBS_arr, 'r')
+plt.xlabel("z [m]", fontsize=18)
+plt.ylabel("Kinetic energy [MeV]", fontsize=18)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.legend(["No SC", "SC", "SC + IBS"], fontsize=18)
 plt.grid()
-plt.savefig("energy_spread.png", dpi=200)
+plt.savefig("kinetic_energy.png", dpi=200)
+plt.savefig("kinetic_energy.svg")
 
-print("Done ✔ All plots saved.")
+
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
+
+# -----------------------
+# Top plot: bunch length
+# -----------------------
+ax1.plot(length_arr, sigma_t_arr, 'k')
+ax1.plot(length_SC_arr, sigma_t_SC_arr, 'b')
+ax1.plot(length_SC_IBS_arr, sigma_t_SC_IBS_arr, 'r')
+
+ax1.set_ylabel("Bunch length [mm/c]", fontsize=18)
+ax1.legend(["No SC", "SC", "SC + IBS"], fontsize=14)
+ax1.grid()
+
+ax1.tick_params(axis='both', labelsize=16)
+
+# -----------------------
+# Bottom plot: energy spread
+# -----------------------
+ax2.plot(length_arr, ES_arr, 'k')
+ax2.plot(length_SC_arr, ES_SC_arr, 'b')
+ax2.plot(length_SC_IBS_arr, ES_SC_IBS_arr, 'r')
+
+ax2.set_xlabel("z [m]", fontsize=18)
+ax2.set_ylabel("Energy spread [MeV]", fontsize=18)
+ax2.legend(["No SC", "SC", "SC + IBS"], fontsize=14)
+ax2.grid()
+
+ax2.tick_params(axis='both', labelsize=16)
+
+# -----------------------
+# X-axis range (IMPORTANT)
+# -----------------------
+ax2.set_xlim(0, 17.5)
+
+# Optional: make layout tight for paper
+plt.tight_layout()
+
+# Save high-quality outputs
+plt.savefig("combined_plot.png", dpi=300, bbox_inches="tight")
+plt.savefig("combined_plot.svg", bbox_inches="tight")
+
+plt.show()
