@@ -104,7 +104,6 @@ class Metrics:
     emitt4d: float
     emittz: float
     transmission: float
-    n_surviving_after_cut: int
     runtime_s: float
     failed: bool = False
     error: str = ""
@@ -600,10 +599,11 @@ def initial_design(
     lo = torch.maximum(global_lo, center - sobol_radius_t)
     hi = torch.minimum(global_hi, center + sobol_radius_t)
 
-    sobol = SobolEngine(dimension=len(PARAMETER_NAMES), scramble=True, seed=seed)
+    # sobol engine --> Prevents clustering in a high dimensional box
+    sobol = SobolEngine(dimension=len(PARAMETER_NAMES), scramble=True, seed=seed) # initial sample not that far
     u = sobol.draw(n_initial - 1).to(dtype=DTYPE, device=DEVICE)
     perturb = lo + (hi - lo) * u
-    return torch.cat([center.unsqueeze(0), perturb], dim=0)
+    return torch.cat([center.unsqueeze(0), perturb], dim=0) # includes the first point
 
 
 def metrics_to_model_outputs(m: Metrics) -> torch.Tensor:
@@ -640,7 +640,8 @@ def build_model(
     d = train_X.shape[-1]
     models = []
     for output_idx in range(3):
-        covar_module = ScaleKernel(MaternKernel(nu=2.5, ard_num_dims=d))
+        # Choosing the matter kernel 2.5
+        covar_module = ScaleKernel(MaternKernel(nu=2.5))
         gp = SingleTaskGP(
             train_X=train_X,
             train_Y=train_Y[:, output_idx : output_idx + 1],
@@ -937,11 +938,11 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--beam-file", type=str, default=str(DEFAULT_BEAM_FILE))
     p.add_argument(
-        "--n-initial", type=int, default=24,
+        "--n-initial", type=int, default=8,
         help="Total initial evaluations including the supplied start.",
     )
     p.add_argument(
-        "--n-iter", type=int, default=60,
+        "--n-iter", type=int, default=10,
         help="Sequential multi-objective BO evaluations after initialization.",
     )
     p.add_argument(
@@ -949,11 +950,11 @@ def parse_args() -> argparse.Namespace:
         help="Optimization domain is START +/- this many tesla, clipped to +/-12 T.",
     )
     p.add_argument(
-        "--sobol-radius", type=float, default=1.0,
+        "--sobol-radius", type=float, default=0.2,
         help="Initial Sobol samples use START +/- this many tesla.",
     )
     p.add_argument(
-        "--trust-radius", type=float, default=1.5,
+        "--trust-radius", type=float, default=0.5,
         help="Each proposed candidate stays within this many tesla of the trust center.",
     )
     p.add_argument(
